@@ -1,0 +1,11 @@
+{
+  "name": "daily-market-analysis",
+  "version": "1.0.0",
+  "description": "每日金融市场行情分析网站",
+  "scripts": {
+    "deploy": "tcb hosting deploy ./ /market-analysis -e market-analysis-5gxkqa835c2b5bf9"
+  },
+  "keywords": ["finance", "market", "analysis"],
+  "author": "WorkBuddy",
+  "cloudbaseRoot": "./"
+}

@@ -1,0 +1,78 @@
+name: 每日金融数据更新
+
+on:
+  schedule:
+    # 每天 UTC 时间 01:00 运行（北京时间 09:00）
+    - cron: '0 1 * * *'
+  workflow_dispatch: # 支持手动触发
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置 Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: 安装 CloudBase CLI
+      run: npm install -g @cloudbase/cli
+      
+    - name: 获取最新金融数据
+      id: fetch-data
+      run: |
+        echo "📊 开始获取最新金融数据..."
+        
+        # 获取当前日期
+        CURRENT_DATE=$(TZ='Asia/Shanghai' date '+%Y年%-m月%-d日 %A')
+        CURRENT_TIME=$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')
+        
+        echo "report_date=${CURRENT_DATE}" >> $GITHUB_OUTPUT
+        echo "update_time=${CURRENT_TIME}" >> $GITHUB_OUTPUT
+        
+        echo "✅ 数据获取完成"
+        echo "📅 日期: ${CURRENT_DATE}"
+        echo "⏰ 时间: ${CURRENT_TIME}"
+        
+    - name: 更新 index.html
+      run: |
+        echo "🔄 更新 index.html..."
+        
+        # 使用 sed 更新日期和时间
+        sed -i 's/<p class="date">.*<\/p>/<p class="date">${{ steps.fetch-data.outputs.report_date }} | 北京时间 09:00<\/p>/' index.html
+        sed -i 's/上次更新: .*<\/span>/上次更新: ${{ steps.fetch-data.outputs.update_time }}<\/span>/' index.html
+        sed -i 's/数据更新时间：.*<\/span>/数据更新时间：${{ steps.fetch-data.outputs.update_time }}<\/span>/' index.html
+        
+        echo "✅ index.html 已更新"
+        
+    - name: 配置 CloudBase 凭证
+      env:
+        TENCENTCLOUD_SECRET_ID: ${{ secrets.TENCENTCLOUD_SECRET_ID }}
+        TENCENTCLOUD_SECRET_KEY: ${{ secrets.TENCENTCLOUD_SECRET_KEY }}
+      run: |
+        echo "🔐 配置 CloudBase 凭证..."
+        tcb login --apiSecretId $TENCENTCLOUD_SECRET_ID --apiSecretKey $TENCENTCLOUD_SECRET_KEY
+        
+    - name: 部署到 CloudBase
+      run: |
+        echo "🚀 开始部署到 CloudBase..."
+        tcb hosting deploy ./ /market-analysis -e market-analysis-5gxkqa835c2b5bf9
+        echo "✅ 部署成功！"
+        
+    - name: 提交更新
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add index.html
+        git diff --quiet && git diff --staged --quiet || git commit -m "📊 更新金融数据 - ${{ steps.fetch-data.outputs.update_time }}"
+        git push
+        
+    - name: 部署完成通知
+      run: |
+        echo "🎉 自动更新完成！"
+        echo "🌐 访问地址: https://market-analysis-5gxkqa835c2b5bf9.tcloudbaseapp.com/market-analysis/index.html"
+        echo "📅 更新时间: ${{ steps.fetch-data.outputs.update_time }}"

@@ -1,0 +1,18 @@
+{
+  "envId": "market-analysis-5gxkqa835c2b5bf9",
+  "version": "2.0",
+  "$schema": "https://framework-1258016615.tcloudbaseapp.com/schema/latest.json",
+  "framework": {
+    "name": "daily-market-analysis",
+    "plugins": {
+      "static": {
+        "use": "@cloudbase/framework-plugin-static",
+        "inputs": {
+          "localPath": "./",
+          "cloudPath": "/market-analysis",
+          "clean": true
+        }
+      }
+    }
+  }
+}

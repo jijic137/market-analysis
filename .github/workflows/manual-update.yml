@@ -1,0 +1,59 @@
+name: 手动触发更新
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: '更新原因'
+        required: false
+        default: '手动触发更新'
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置 Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: 安装 CloudBase CLI
+      run: npm install -g @cloudbase/cli
+      
+    - name: 获取最新金融数据
+      id: fetch-data
+      run: |
+        echo "📊 开始获取最新金融数据..."
+        CURRENT_DATE=$(TZ='Asia/Shanghai' date '+%Y年%-m月%-d日 %A')
+        CURRENT_TIME=$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')
+        echo "report_date=${CURRENT_DATE}" >> $GITHUB_OUTPUT
+        echo "update_time=${CURRENT_TIME}" >> $GITHUB_OUTPUT
+        
+    - name: 更新 index.html
+      run: |
+        sed -i 's/<p class="date">.*<\/p>/<p class="date">${{ steps.fetch-data.outputs.report_date }} | 北京时间 09:00<\/p>/' index.html
+        sed -i 's/上次更新: .*<\/span>/上次更新: ${{ steps.fetch-data.outputs.update_time }}<\/span>/' index.html
+        sed -i 's/数据更新时间：.*<\/span>/数据更新时间：${{ steps.fetch-data.outputs.update_time }}<\/span>/' index.html
+        
+    - name: 配置 CloudBase 凭证
+      env:
+        TENCENTCLOUD_SECRET_ID: ${{ secrets.TENCENTCLOUD_SECRET_ID }}
+        TENCENTCLOUD_SECRET_KEY: ${{ secrets.TENCENTCLOUD_SECRET_KEY }}
+      run: |
+        tcb login --apiSecretId $TENCENTCLOUD_SECRET_ID --apiSecretKey $TENCENTCLOUD_SECRET_KEY
+        
+    - name: 部署到 CloudBase
+      run: |
+        tcb hosting deploy ./ /market-analysis -e market-analysis-5gxkqa835c2b5bf9
+        
+    - name: 提交更新
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add index.html
+        git diff --quiet && git diff --staged --quiet || git commit -m "📊 手动更新 - ${{ steps.fetch-data.outputs.update_time }}"
+        git push

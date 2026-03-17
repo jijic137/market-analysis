@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "build": {
+    "commands": [],
+    "output": "./"
+  },
+  "deploy": {
+    "target": "hosting",
+    "cloudPath": "/market-analysis",
+    "localPath": "./"
+  }
+}

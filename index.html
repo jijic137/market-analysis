@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日金融市场行情分析 - 2026年3月17日</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    padding: 40px;
+}
+
+/* 头部 */
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 3px solid #667eea;
+}
+
+.header h1 {
+    font-size: 32px;
+    color: #1a1a2e;
+    margin-bottom: 10px;
+}
+
+.header .date {
+    font-size: 18px;
+    color: #6c757d;
+    margin-bottom: 15px;
+}
+
+.update-info {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+}
+
+.auto-update {
+    background: #d4edda;
+    color: #155724;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.update-time {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* 区块样式 */
+.section {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 24px;
+    color: #1a1a2e;
+    margin-bottom: 20px;
+    padding-left: 15px;
+    border-left: 4px solid #667eea;
+}
+
+/* 网格布局 */
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* 卡片 */
+.card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecef 100%);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.index-card {
+    text-align: center;
+}
+
+.index-name {
+    font-size: 16px;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.index-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+}
+
+.index-change {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.positive {
+    background: #d4edda;
+    color: #155724;
+}
+
+.negative {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* 高亮提示 */
+.highlight {
+    background: #fff3cd;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+    margin: 15px 0;
+}
+
+.highlight strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #856404;
+}
+
+.highlight p {
+    color: #856404;
+    line-height: 1.6;
+}
+
+/* 图表容器 */
+.chart-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.chart-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 15px;
+}
+
+/* 表格 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+th {
+    background: #667eea;
+    color: white;
+    font-weight: 600;
+}
+
+tr:hover {
+    background: #f8f9fa;
+}
+
+/* 新闻项 */
+.news-item {
+    background: white;
+    border-left: 4px solid #667eea;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
+}
+
+.news-item:hover {
+    transform: translateX(5px);
+}
+
+.news-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+}
+
+.news-content {
+    font-size: 14px;
+    color: #495057;
+    line-height: 1.6;
+}
+
+/* 投资建议 */
+.advice-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin-top: 20px;
+}
+
+.advice-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.advice-item {
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.advice-item strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.advice-item p {
+    font-size: 14px;
+    line-height: 1.6;
+    opacity: 0.95;
+}
+
+/* 风险提示 */
+.risk-warning {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-top: 30px;
+    color: #856404;
+}
+
+.risk-warning strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* 页脚 */
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #e9ecef;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.footer a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 20px;
+    }
+    
+    .header h1 {
+        font-size: 24px;
+    }
+    
+    .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+    }
+    
+    .index-value {
+        font-size: 28px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 每日金融市场行情分析</h1>
+            <p class="date">2026年3月17日 星期二 | 北京时间 09:00</p>
+            <div class="update-info">
+                <span class="auto-update">🔄 每日自动更新</span>
+                <span class="update-time">上次更新: 2026-03-17 09:00:00</span>
+            </div>
+        </div>
+
+        <!-- A股市场 -->
+        <div class="section">
+            <h2 class="section-title">🇨🇳 A股市场概况</h2>
+            <div class="grid-3">
+                <div class="card index-card">
+                    <div class="index-name">上证指数</div>
+                    <div class="index-value">4,084.79</div>
+                    <div class="index-change negative">-0.26%</div>
+                </div>
+                <div class="card index-card">
+                    <div class="index-name">深证成指</div>
+                    <div class="index-value">12,567.32</div>
+                    <div class="index-change positive">+0.19%</div>
+                </div>
+                <div class="card index-card">
+                    <div class="index-name">创业板指</div>
+                    <div class="index-value">3,357.02</div>
+                    <div class="index-change positive">+1.41%</div>
+                </div>
+            </div>
+            <div class="highlight">
+                <strong>📈 市场特征：</strong>
+                市场呈现明显的结构性分化格局。上证指数小幅回调，而创业板指表现强势，显示市场风格继续向科技成长板块切换。沪深京三市成交额23399亿元，较上日缩量。
+            </div>
+        </div>
+
+        <!-- 美股市场 -->
+        <div class="section">
+            <h2 class="section-title">🇺🇸 美股市场概况（3月16日收盘）</h2>
+            <div class="grid-3">
+                <div class="card index-card">
+                    <div class="index-name">道琼斯指数</div>
+                    <div class="index-value">46,946.41</div>
+                    <div class="index-change positive">+0.83%</div>
+                </div>
+                <div class="card index-card">
+                    <div class="index-name">标普500</div>
+                    <div class="index-value">6,699.38</div>
+                    <div class="index-change positive">+1.01%</div>
+                </div>
+                <div class="card index-card">
+                    <div class="index-name">纳斯达克</div>
+                    <div class="index-value">22,374.18</div>
+                    <div class="index-change positive">+1.22%</div>
+                </div>
+            </div>
+            <div class="highlight">
+                <strong>🔥 科技股领涨：</strong>
+                美股三大指数止跌反弹，AI相关股票带动市场上行。英伟达涨1.65%，公司预计Blackwell和Rubin芯片到2027年将创收1万亿美元。Meta涨2.33%，特斯拉涨1.11%，苹果、微软、亚马逊、谷歌均上涨。半导体板块表现亮眼，费城半导体指数大涨1.96%。
+            </div>
+        </div>
+
+        <!-- 走势图 -->
+        <div class="section">
+            <h2 class="section-title">📈 价格走势图</h2>
+            <div class="grid-2">
+                <div class="chart-container">
+                    <div class="chart-title">A股三大指数走势</div>
+                    <canvas id="chinaChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">美股三大指数走势</div>
+                    <canvas id="usChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商品市场 -->
+        <div class="section">
+            <h2 class="section-title">💰 商品与外汇市场</h2>
+            <div class="grid-2">
+                <div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>品种</th>
+                                <th>价格</th>
+                                <th>涨跌幅</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>黄金</td>
+                                <td>$4,984.18/盎司</td>
+                                <td class="negative">-0.76%</td>
+                            </tr>
+                            <tr>
+                                <td>布伦特原油</td>
+                                <td>$83.19/桶</td>
+                                <td class="negative">-8.36%</td>
+                            </tr>
+                            <tr>
+                                <td>WTI原油</td>
+                                <td>$78.45/桶</td>
+                                <td class="negative">-10.12%</td>
+                            </tr>
+                            <tr>
+                                <td>比特币</td>
+                                <td>$74,000+</td>
+                                <td class="positive">+3.00%</td>
+                            </tr>
+                            <tr>
+                                <td>以太坊</td>
+                                <td>$3,800+</td>
+                                <td class="positive">+10.00%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">大宗商品涨跌幅</div>
+                    <canvas id="commodityChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 国际局势 -->
+        <div class="section">
+            <h2 class="section-title">🌍 国际局势分析</h2>
+            
+            <div class="news-item">
+                <div class="news-title">1. 中东局势缓和迹象</div>
+                <div class="news-content">
+                    霍尔木兹海峡护航行动缓解地缘紧张局势，原油运输有望恢复正常。这一变化直接导致国际油价大幅回落，缓解了全球通胀压力，利好股市风险偏好回升。
+                </div>
+            </div>
+
+            <div class="news-item">
+                <div class="news-title">2. 中美经贸磋商进展</div>
+                <div class="news-content">
+                    中美在法国巴黎举行经贸磋商，双方考虑建立促进双边贸易投资合作的工作机制。这一积极信号有助于改善市场预期，对中国资产形成利好支撑。
+                </div>
+            </div>
+
+            <div class="news-item">
+                <div class="news-title">3. AI产业持续火热</div>
+                <div class="news-content">
+                    英伟达GTC大会发布DLSS 5等新技术，预计2025-2027年AI芯片订单规模达1万亿美元。AI算力产业链持续受益，半导体存储板块表现强势。
+                </div>
+            </div>
+
+            <div class="news-item">
+                <div class="news-title">4. 美联储政策预期</div>
+                <div class="news-content">
+                    油价下跌降低了通胀压力，市场对美联储降息预期有所升温。10年期美债收益率下降5个基点，美元跌0.5%，风险资产获得支撑。
+                </div>
+            </div>
+        </div>
+
+        <!-- 热门板块 -->
+        <div class="section">
+            <h2 class="section-title">🏢 热门板块表现</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="margin-bottom: 15px; color: #1a1a2e;">🔥 领涨板块</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>板块</th>
+                                <th>涨幅</th>
+                                <th>驱动因素</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>存储芯片</td>
+                                <td class="positive">+3.68%</td>
+                                <td>AI需求推动</td>
+                            </tr>
+                            <tr>
+                                <td>PCB概念</td>
+                                <td class="positive">+2.85%</td>
+                                <td>产业链升级</td>
+                            </tr>
+                            <tr>
+                                <td>半导体</td>
+                                <td class="positive">+1.96%</td>
+                                <td>英伟达带动</td>
+                            </tr>
+                            <tr>
+                                <td>AI算力</td>
+                                <td class="positive">+2.12%</td>
+                                <td>GTC大会利好</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 15px; color: #1a1a2e;">📉 调整板块</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>板块</th>
+                                <th>跌幅</th>
+                                <th>原因</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>石油石化</td>
+                                <td class="negative">-3.20%</td>
+                                <td>油价暴跌</td>
+                            </tr>
+                            <tr>
+                                <td>传统能源</td>
+                                <td class="negative">-2.80%</td>
+                                <td>能源转型</td>
+                            </tr>
+                            <tr>
+                                <td>白酒</td>
+                                <td class="negative">-1.50%</td>
+                                <td>估值回调</td>
+                            </tr>
+                            <tr>
+                                <td>银行</td>
+                                <td class="negative">-0.80%</td>
+                                <td>利率预期</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 投资建议 -->
+        <div class="section">
+            <h2 class="section-title">💡 投资建议</h2>
+            <div class="advice-box">
+                <div class="advice-title">基于当前市场环境的投资策略</div>
+                
+                <div class="advice-item">
+                    <strong>1. 🚀 科技成长主线持续</strong>
+                    <p>AI产业链仍是核心投资主线。英伟达万亿营收预期提振半导体板块，建议关注存储芯片、PCB、算力设备等细分领域。创业板强于主板印证成长风格占优，可适当配置科技ETF或优质成长股。</p>
+                </div>
+
+                <div class="advice-item">
+                    <strong>2. 🛢️ 规避传统能源板块</strong>
+                    <p>油价暴跌对石油石化板块形成直接冲击，短期建议规避或减仓。地缘政治缓和预期下，能源价格可能持续承压，可等待企稳后再考虑配置。</p>
+                </div>
+
+                <div class="advice-item">
+                    <strong>3. 🥇 黄金逢低布局良机</strong>
+                    <p>金价小幅回调至$4,984/盎司，但仍较一年前上涨66%。地缘政治不确定性仍在，黄金作为避险资产可逢低配置，建议定投方式参与。</p>
+                </div>
+
+                <div class="advice-item">
+                    <strong>4. 🌏 关注中美关系改善受益标的</strong>
+                    <p>中美经贸磋商取得进展，有利于改善市场预期。可关注出口链、跨境电商、科技合作等受益领域，港股恒生科技指数大涨逾2%已反映部分预期。</p>
+                </div>
+
+                <div class="advice-item">
+                    <strong>5. 💰 加密货币谨慎参与</strong>
+                    <p>比特币突破7.4万美元，以太坊大涨10%，主要受贝莱德质押ETH ETF资金流入推动。波动较大，建议控制仓位，仅用小资金试探性参与。</p>
+                </div>
+
+                <div class="advice-item">
+                    <strong>6. 📊 均衡配置应对分化</strong>
+                    <p>市场结构性分化明显，建议采用"科技+价值"均衡配置策略。核心仓位配置科技成长，卫星仓位可关注低估值蓝筹，控制整体仓位在60-70%，保留现金应对波动。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 后市展望 -->
+        <div class="section">
+            <h2 class="section-title">🔮 后市展望</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h3 style="margin-bottom: 15px; color: #155724;">✅ 积极因素</h3>
+                    <ul style="line-height: 2; color: #495057; padding-left: 20px;">
+                        <li>地缘政治紧张局势缓解</li>
+                        <li>油价下跌减轻通胀压力</li>
+                        <li>AI产业持续高景气</li>
+                        <li>中美关系出现改善信号</li>
+                        <li>美联储降息预期升温</li>
+                        <li>科技股财报预期向好</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom: 15px; color: #721c24;">⚠️ 风险因素</h3>
+                    <ul style="line-height: 2; color: #495057; padding-left: 20px;">
+                        <li>地缘政治仍有不确定性</li>
+                        <li>美国通胀数据可能反复</li>
+                        <li>A股成交量有所萎缩</li>
+                        <li>估值已处相对高位</li>
+                        <li>经济复苏力度待观察</li>
+                        <li>美股获利了结压力</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 风险提示 -->
+        <div class="risk-warning">
+            <strong>⚠️ 风险提示</strong>
+            <p>本报告仅供参考，不构成投资建议。市场有风险，投资需谨慎。地缘政治局势、美联储政策、经济数据等因素可能导致市场大幅波动，请根据自身风险承受能力理性投资。</p>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>数据更新时间：2026-03-17 09:00:00</p>
+            <p>数据来源：东方财富、新浪财经、腾讯证券、华尔街见闻等</p>
+            <p>由 WorkBuddy 自动化系统每日更新 | <a href="history.html">历史报告</a></p>
+        </div>
+    </div>
+
+    <script>
+        // A股走势图
+        const chinaCtx = document.getElementById('chinaChart').getContext('2d');
+        new Chart(chinaCtx, {
+            type: 'line',
+            data: {
+                labels: ['3/13', '3/14', '3/15', '3/16', '3/17'],
+                datasets: [{
+                    label: '上证指数',
+                    data: [4129, 4115, 4095, 4085, 4085],
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }, {
+                    label: '深证成指',
+                    data: [12450, 12480, 12520, 12543, 12567],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }, {
+                    label: '创业板指',
+                    data: [3280, 3295, 3310, 3330, 3357],
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+
+        // 美股走势图
+        const usCtx = document.getElementById('usChart').getContext('2d');
+        new Chart(usCtx, {
+            type: 'line',
+            data: {
+                labels: ['3/12', '3/13', '3/14', '3/15', '3/16'],
+                datasets: [{
+                    label: '道琼斯',
+                    data: [46200, 46400, 46600, 46550, 46946],
+                    borderColor: '#9b59b6',
+                    backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }, {
+                    label: '标普500',
+                    data: [6550, 6580, 6620, 6630, 6699],
+                    borderColor: '#f39c12',
+                    backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }, {
+                    label: '纳斯达克',
+                    data: [21900, 22000, 22150, 22100, 22374],
+                    borderColor: '#1abc9c',
+                    backgroundColor: 'rgba(26, 188, 156, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+
+        // 商品涨跌幅图
+        const commodityCtx = document.getElementById('commodityChart').getContext('2d');
+        new Chart(commodityCtx, {
+            type: 'bar',
+            data: {
+                labels: ['黄金', '布油', 'WTI原油', '比特币', '以太坊'],
+                datasets: [{
+                    label: '涨跌幅(%)',
+                    data: [-0.76, -8.36, -10.12, 3, 10],
+                    backgroundColor: [
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(231, 76, 60, 0.8)',
+                        'rgba(231, 76, 60, 0.8)',
+                        'rgba(46, 204, 113, 0.8)',
+                        'rgba(46, 204, 113, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 193, 7)',
+                        'rgb(231, 76, 60)',
+                        'rgb(231, 76, 60)',
+                        'rgb(46, 204, 113)',
+                        'rgb(46, 204, 113)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
