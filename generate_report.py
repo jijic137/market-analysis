@@ -7,7 +7,10 @@
 import os
 import json
 import requests
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+# 北京时间 (UTC+8)
+BEIJING_TZ = timezone(timedelta(hours=8))
 
 # DeepSeek API 配置
 DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY')
@@ -117,7 +120,10 @@ def get_financial_analysis():
 def generate_html(data):
     """生成 HTML 报告"""
     
-    update_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # 使用北京时间
+    now = datetime.now(BEIJING_TZ)
+    update_time = now.strftime('%Y-%m-%d %H:%M:%S')
+    current_hour = now.strftime('%H:%M')
     
     # 生成商品表格行
     commodity_rows = ""
@@ -527,7 +533,7 @@ tr:hover {{
     <div class="container">
         <div class="header">
             <h1>📊 每日金融市场行情分析</h1>
-            <p class="date">{data['report_date']} | 北京时间 09:00</p>
+            <p class="date">{data['report_date']} | 北京时间 {current_hour}</p>
             <div class="update-info">
                 <span class="auto-update">🔄 每日自动更新</span>
                 <span class="update-time">上次更新: {update_time}</span>
@@ -686,8 +692,12 @@ tr:hover {{
 
         <!-- 页脚 -->
         <div class="footer">
-            <p>数据更新时间：{update_time}</p>
-            <p>数据来源：DeepSeek AI 搜索整理 | 由 WorkBuddy 自动化系统每日更新</p>
+            <p>数据更新时间：{update_time} (北京时间)</p>
+            <p>数据来源：公开市场数据，由 DeepSeek AI 整理分析</p>
+            <p>本项目由 jijic137 开发维护 | <a href="https://github.com/jijic137/market-analysis">GitHub</a></p>
+            <p style="font-size: 12px; margin-top: 10px; color: #adb5bd;">
+                免责声明：本报告仅供参考，不构成投资建议。使用本报告产生的任何后果由用户自行承担。
+            </p>
         </div>
     </div>
 
