@@ -46,7 +46,8 @@ jobs:
     - name: 部署到 CloudBase
       run: |
         echo "🚀 开始部署到 CloudBase..."
-        tcb hosting deploy ./ /market-analysis -e market-analysis-5gxkqa835c2b5bf9
+        # 只上传 index.html 文件，避免上传 .git 目录
+        tcb hosting deploy index.html /market-analysis/index.html -e market-analysis-5gxkqa835c2b5bf9
         echo "✅ 部署成功！"
         
     - name: 提交更新
