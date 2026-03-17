@@ -9,7 +9,7 @@ on:
         default: '手动触发更新'
 
 permissions:
-  contents: write  # 允许推送代码
+  contents: write
 
 jobs:
   update-and-deploy:
@@ -19,12 +19,24 @@ jobs:
     - name: 检出代码
       uses: actions/checkout@v4
       with:
-        persist-credentials: true  # 保留凭证以便推送
+        persist-credentials: true
         
-    - name: 设置 Node.js
-      uses: actions/setup-node@v4
+    - name: 设置 Python
+      uses: actions/setup-python@v5
       with:
-        node-version: '20'
+        python-version: '3.11'
+        
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+        
+    - name: 生成金融报告
+      env:
+        DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      run: |
+        echo "📊 开始生成金融报告..."
+        python generate_report.py
         
     - name: 安装 CloudBase CLI
       run: npm install -g @cloudbase/cli
@@ -33,25 +45,9 @@ jobs:
       run: |
         tcb login --apiKeyId ${{ secrets.TCB_SECRET_ID }} --apiKey ${{ secrets.TCB_SECRET_KEY }}
         
-    - name: 获取最新金融数据
-      id: fetch-data
-      run: |
-        echo "📊 开始获取最新金融数据..."
-        CURRENT_DATE=$(TZ='Asia/Shanghai' date '+%Y年%-m月%-d日 %A')
-        CURRENT_TIME=$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')
-        echo "report_date=${CURRENT_DATE}" >> $GITHUB_OUTPUT
-        echo "update_time=${CURRENT_TIME}" >> $GITHUB_OUTPUT
-        
-    - name: 更新 index.html
-      run: |
-        sed -i 's/<p class="date">.*<\/p>/<p class="date">${{ steps.fetch-data.outputs.report_date }} | 北京时间 09:00<\/p>/' index.html
-        sed -i 's/上次更新: .*<\/span>/上次更新: ${{ steps.fetch-data.outputs.update_time }}<\/span>/' index.html
-        sed -i 's/数据更新时间：.*<\/span>/数据更新时间：${{ steps.fetch-data.outputs.update_time }}<\/span>/' index.html
-        
     - name: 部署到 CloudBase
       run: |
         echo "🚀 开始部署到 CloudBase..."
-        # 只上传 index.html 文件，避免上传 .git 目录
         tcb hosting deploy index.html /market-analysis/index.html -e market-analysis-5gxkqa835c2b5bf9
         echo "✅ 部署成功！"
         
@@ -60,5 +56,5 @@ jobs:
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add index.html
-        git diff --quiet && git diff --staged --quiet || git commit -m "manual update: ${{ steps.fetch-data.outputs.update_time }}"
+        git diff --quiet && git diff --staged --quiet || git commit -m "update: manual trigger"
         git push
