@@ -9,6 +9,10 @@ on:
 jobs:
   update-and-deploy:
     runs-on: ubuntu-latest
+    # 关键：环境变量必须设置在 job 级别，CloudBase CLI 会自动读取
+    env:
+      TENCENTCLOUD_SECRET_ID: ${{ secrets.TENCENTCLOUD_SECRET_ID }}
+      TENCENTCLOUD_SECRET_KEY: ${{ secrets.TENCENTCLOUD_SECRET_KEY }}
     
     steps:
     - name: 检出代码
@@ -49,17 +53,10 @@ jobs:
         
         echo "✅ index.html 已更新"
         
-    - name: 配置 CloudBase 凭证
-      env:
-        TENCENTCLOUD_SECRET_ID: ${{ secrets.TENCENTCLOUD_SECRET_ID }}
-        TENCENTCLOUD_SECRET_KEY: ${{ secrets.TENCENTCLOUD_SECRET_KEY }}
-      run: |
-        echo "🔐 配置 CloudBase 凭证..."
-        tcb login --apiSecretId $TENCENTCLOUD_SECRET_ID --apiSecretKey $TENCENTCLOUD_SECRET_KEY
-        
     - name: 部署到 CloudBase
       run: |
         echo "🚀 开始部署到 CloudBase..."
+        echo "🔐 使用环境变量中的密钥进行认证..."
         tcb hosting deploy ./ /market-analysis -e market-analysis-5gxkqa835c2b5bf9
         echo "✅ 部署成功！"
         
