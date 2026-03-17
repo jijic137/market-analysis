@@ -11,10 +11,6 @@ on:
 jobs:
   update-and-deploy:
     runs-on: ubuntu-latest
-    # 关键：环境变量必须设置在 job 级别，CloudBase CLI 会自动读取
-    env:
-      TENCENTCLOUD_SECRET_ID: ${{ secrets.TENCENTCLOUD_SECRET_ID }}
-      TENCENTCLOUD_SECRET_KEY: ${{ secrets.TENCENTCLOUD_SECRET_KEY }}
     
     steps:
     - name: 检出代码
@@ -28,6 +24,10 @@ jobs:
     - name: 安装 CloudBase CLI
       run: npm install -g @cloudbase/cli
       
+    - name: 登录 CloudBase
+      run: |
+        tcb login --apiKeyId ${{ secrets.TCB_SECRET_ID }} --apiKey ${{ secrets.TCB_SECRET_KEY }}
+        
     - name: 获取最新金融数据
       id: fetch-data
       run: |
@@ -54,5 +54,5 @@ jobs:
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add index.html
-        git diff --quiet && git diff --staged --quiet || git commit -m "📊 手动更新 - ${{ steps.fetch-data.outputs.update_time }}"
+        git diff --quiet && git diff --staged --quiet || git commit -m "manual update: ${{ steps.fetch-data.outputs.update_time }}"
         git push
